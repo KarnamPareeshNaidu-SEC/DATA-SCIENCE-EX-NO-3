@@ -43,7 +43,72 @@ We use this categorical data encoding technique when the features are nominal(do
 • Yeojohnson method
 
 # CODING AND OUTPUT:
-       # INCLUDE YOUR CODING AND OUTPUT SCREENSHOTS HERE
+      
+    
+~~~import numpy as np
+from sklearn.preprocessing import LabelEncoder, StandardScaler, PowerTransformer
+from scipy.stats import boxcox
+
+#Load the Dataset
+
+data = pd.read_csv('Data_to_Transform.csv')
+print("Original Dataset:")
+print(data.head())
+
+data.fillna(data.mean(numeric_only=True), inplace=True)
+
+#Select a suitable numeric column for transformation
+
+numeric_column = data.select_dtypes(include=np.number).columns[0]
+print(f"\nColumn Selected for Transformation: {numeric_column}")
+
+#Keeping only positive values for log and boxcox
+
+positive_data = data[data[numeric_column] > 0].copy()
+
+#Log Transformation
+
+positive_data['Log_Transform'] = np.log(positive_data[numeric_column])
+
+#Reciprocal Transformation
+
+positive_data['Reciprocal_Transform'] = 1 / positive_data[numeric_column]
+
+#Square Root Transformation
+
+positive_data['Sqrt_Transform'] = np.sqrt(positive_data[numeric_column])
+
+#Square Transformation
+
+positive_data['Square_Transform'] = np.square(positive_data[numeric_column])
+
+Step 8: Box-Cox Transformation (only positive values)
+
+positive_data['BoxCox_Transform'], lambda_value = boxcox(positive_data[numeric_column])
+print(f"\nBox-Cox Lambda Value: {lambda_value}")
+
+#Yeo-Johnson Transformation (works with zero/negative values)
+
+pt = PowerTransformer(method='yeo-johnson')
+data['YeoJohnson_Transform'] = pt.fit_transform(data[[numeric_column]])
+
+#Standard Scaling
+
+scaler = StandardScaler()
+data['Standard_Scaled'] = scaler.fit_transform(data[[numeric_column]])
+
+#Saving the transformed dataset
+
+positive_data.to_csv('Transformed_Positive_Data.csv', index=False)
+data.to_csv('Transformed_Full_Data.csv', index=False)
+
+print("\nTransformation Completed Successfully.")
+print("\nTransformed Dataset Preview:")
+print(positive_data.head())
+~~~
+<img width="807" height="282" alt="image" src="https://github.com/user-attachments/assets/94563f86-a41e-48a0-a663-b5301693eee7" />
+<img width="806" height="524" alt="image" src="https://github.com/user-attachments/assets/beffd8df-a74a-4020-a9f7-943f374e6aaa" />
+
 # RESULT:
        # INCLUDE YOUR RESULT HERE
 
